@@ -57,7 +57,6 @@ class PackageAnalyzer:
 
     def run(self):
         try:
-            print("Запуск анализатора пакетов...")
 
             self.load_config()
 
