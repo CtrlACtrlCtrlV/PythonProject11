@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Комит?">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package_analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/package_analyzer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +135,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763023249122</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Комит?">
+      <option name="closed" value="true" />
+      <created>1763023375117</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1763023375117</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
