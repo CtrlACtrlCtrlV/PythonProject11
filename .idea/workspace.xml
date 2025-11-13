@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Комит?">
-      <change afterPath="$PROJECT_DIR$/package_analyzer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_errors.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_errors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package_analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/package_analyzer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +48,7 @@
   "keyToString": {
     "Python tests.Python tests in test_errors.py.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.package_analyzer.executor": "Run",
     "Python.test_errors.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -120,7 +120,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763021002995</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Комит?">
+      <option name="closed" value="true" />
+      <created>1763022983879</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1763022983879</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
