@@ -104,7 +104,7 @@ def main():
     config_path = sys.argv[1]
 
     try:
-        # Конвейер обработки конфигурации в стиле пособия
+
         (ConfigManager(config_path)
          .load_config()
          .validate_required_keys()

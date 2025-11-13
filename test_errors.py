@@ -28,7 +28,7 @@ def test_scenarios():
             'name': 'Отсутствует обязательный параметр',
             'config': '''
 package_name: "test"
-repo_url: "https://example.com"
+repo_url: "https://github.com/CtrlACtrlCtrlV/PythonProject11"
 mode: "remote"
 version: "1.0.0"
 output_image: "graph.png"
@@ -40,7 +40,7 @@ output_image: "graph.png"
             'name': 'Неверный режим работы',
             'config': '''
 package_name: "test"
-repo_url: "https://example.com"
+repo_url: "https://github.com/CtrlACtrlCtrlV/PythonProject11"
 mode: "invalid_mode"
 version: "1.0.0"
 output_image: "graph.png"
@@ -52,7 +52,7 @@ filter_substring: "test"
             'name': 'Некорректное имя выходного файла',
             'config': '''
 package_name: "test"
-repo_url: "https://example.com"
+repo_url: "https://github.com/CtrlACtrlCtrlV/PythonProject11"
 mode: "remote"
 version: "1.0.0"
 output_image: "graph.jpg"  # должно быть .png
