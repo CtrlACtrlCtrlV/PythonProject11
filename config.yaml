@@ -1,5 +1,5 @@
-package_name: "my_analyzer"
-repo_url: "https://github.com/example/test-repo"
+package_name: "analyzer"
+repo_url: "https://github.com/CtrlACtrlCtrlV/PythonProject11"
 mode: "remote"
 version: "1.0.0"
 output_image: "dependency_graph.png"

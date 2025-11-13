@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-"""
-Скрипт для тестирования обработки ошибок
-"""
 
 import os
 import tempfile
 
 
 def create_test_config(content: str) -> str:
-    """Создание временного конфигурационного файла для тестирования"""
+
     with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
         f.write(content)
         return f.name
 
 
 def test_scenarios():
-    """Тестовые сценарии из учебного пособия"""
 
     test_cases = [
         {

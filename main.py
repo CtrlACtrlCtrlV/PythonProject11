@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Минимальное CLI-приложение с конфигурацией YAML
-Реализация в соответствии с принципами из учебно-методического пособия
-"""
 
 import yaml
 import sys
@@ -10,12 +6,10 @@ from typing import Dict, Any, List
 
 
 class ConfigError(Exception):
-    """Базовое исключение для ошибок конфигурации"""
     pass
 
 
 class ConfigValidator:
-    """Валидатор конфигурационных параметров"""
 
     @staticmethod
     def validate_package_name(name: str) -> None:
@@ -50,7 +44,6 @@ class ConfigValidator:
 
 
 class ConfigManager:
-    """Менеджер конфигурации в стиле паттерна Pipe из пособия"""
 
     def __init__(self, config_path: str):
         self.config_path = config_path
@@ -61,7 +54,6 @@ class ConfigManager:
         }
 
     def load_config(self) -> 'ConfigManager':
-        """Загрузка конфигурации из YAML файла"""
         try:
             with open(self.config_path, 'r', encoding='utf-8') as file:
                 self.config = yaml.safe_load(file)
@@ -73,7 +65,6 @@ class ConfigManager:
         return self
 
     def validate_required_keys(self) -> 'ConfigManager':
-        """Проверка наличия обязательных параметров"""
         missing_keys = self.required_keys - set(self.config.keys())
         if missing_keys:
             raise ConfigError(f"Отсутствуют обязательные параметры: {missing_keys}")
@@ -97,7 +88,6 @@ class ConfigManager:
         return self
 
     def print_config(self) -> 'ConfigManager':
-        """Вывод конфигурации в формате ключ-значение"""
         print("Конфигурационные параметры:")
         for key, value in self.config.items():
             print(f"{key}: {value}")
@@ -106,10 +96,7 @@ class ConfigManager:
 
 
 def main():
-    """
-    Основная функция приложения
-    Реализует обработку ошибок в соответствии с принципами из пособия
-    """
+
     if len(sys.argv) != 2:
         print("Использование: python main.py <config_file>")
         sys.exit(1)
