@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Анализатор пакетов Rust (Cargo) - получение зависимостей
-Этап 2: Получение прямых зависимостей через GitHub API
-"""
 
 import yaml
 import sys
@@ -30,7 +26,6 @@ class PackageAnalyzer:
         }
 
     def load_config(self):
-        """Загружает и валидирует конфигурацию"""
         try:
             if not self.config_path.exists():
                 raise FileNotFoundError(f"Конфигурационный файл {self.config_path} не найден")
@@ -44,7 +39,7 @@ class PackageAnalyzer:
             self._validate_config()
 
         except yaml.YAMLError as e:
-            raise ValueError(f"Ошибка формата YAML: {e}")
+            raise ValueError(f"Ошибка YAML: {e}")
         except Exception as e:
             raise RuntimeError(f"Ошибка загрузки конфигурации: {e}")
 
@@ -52,14 +47,13 @@ class PackageAnalyzer:
         """Проверяет валидность конфигурации"""
         missing_keys = self.required_keys - set(self.config_data.keys())
         if missing_keys:
-            raise ValueError(f"Отсутствуют обязательные параметры: {', '.join(missing_keys)}")
+            raise ValueError(f"Отсутствуют параметры: {', '.join(missing_keys)}")
 
         for key in self.required_keys:
             if not isinstance(self.config_data[key], str):
                 raise TypeError(f"Параметр '{key}' должен быть строкой")
 
     def extract_github_info(self, repo_url):
-        """Извлекает владельца и название репозитория из GitHub URL"""
         patterns = [
             r'https://github\.com/([^/]+)/([^/]+)',
             r'git@github\.com:([^/]+)/([^/]+)\.git'
@@ -70,10 +64,9 @@ class PackageAnalyzer:
             if match:
                 return match.group(1), match.group(2)
 
-        raise ValueError(f"Неподдерживаемый формат URL репозитория: {repo_url}")
+        raise ValueError(f"Неподдерживаемый формат репозитория: {repo_url}")
 
     def get_cargo_toml_content(self, owner, repo, version):
-        """Получает содержимое Cargo.toml через GitHub API"""
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/Cargo.toml?ref={version}"
 
         try:
@@ -100,7 +93,6 @@ class PackageAnalyzer:
             raise RuntimeError(f"Ошибка сети: {e.reason}")
 
     def parse_dependencies(self, cargo_toml_content):
-        """Парсит зависимости из содержимого Cargo.toml"""
         dependencies = {}
 
         # Регулярные выражения для поиска зависимостей
@@ -149,7 +141,6 @@ class PackageAnalyzer:
         return dependencies
 
     def filter_dependencies(self, dependencies, filter_substring):
-        """Фильтрует зависимости по подстроке"""
         if not filter_substring:
             return dependencies
 
@@ -157,7 +148,6 @@ class PackageAnalyzer:
                 if filter_substring.lower() in name.lower()}
 
     def display_dependencies(self, dependencies):
-        """Выводит прямые зависимости пакета"""
         package_name = self.config_data['package_name']
         version = self.config_data['version']
 
@@ -173,30 +163,23 @@ class PackageAnalyzer:
         print("=" * 50)
 
     def run(self):
-        """Основной метод запуска приложения"""
         try:
             print("Запуск анализатора зависимостей Rust-пакетов...")
 
-            # Загрузка конфигурации
             self.load_config()
 
-            # Извлечение информации о репозитории
             owner, repo = self.extract_github_info(self.config_data['repo_url'])
             print(f"Анализ репозитория: {owner}/{repo}")
 
-            # Получение Cargo.toml
             cargo_content = self.get_cargo_toml_content(owner, repo, self.config_data['version'])
 
-            # Парсинг зависимостей
             dependencies = self.parse_dependencies(cargo_content)
 
-            # Фильтрация зависимостей
             filtered_deps = self.filter_dependencies(
                 dependencies,
                 self.config_data['filter_substring']
             )
 
-            # Вывод зависимостей
             self.display_dependencies(filtered_deps)
 
             print("Анализ зависимостей завершен успешно!")

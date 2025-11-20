@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Комит?">
+    <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Вроде работает">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package_analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/package_analyzer.py" afterDir="false" />
@@ -153,7 +153,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763024267813</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Неизвестная ошибка">
+      <option name="closed" value="true" />
+      <created>1763620378840</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1763620378840</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Вроде работает">
+      <option name="closed" value="true" />
+      <created>1763620795535</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1763620795535</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -170,6 +186,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Первый комит" />
     <MESSAGE value="Комит?" />
-    <option name="LAST_COMMIT_MESSAGE" value="Комит?" />
+    <MESSAGE value="Неизвестная ошибка" />
+    <MESSAGE value="Вроде работает" />
+    <option name="LAST_COMMIT_MESSAGE" value="Вроде работает" />
   </component>
 </project>
