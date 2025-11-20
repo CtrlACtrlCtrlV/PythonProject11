@@ -44,7 +44,6 @@ class PackageAnalyzer:
             raise RuntimeError(f"Ошибка загрузки конфигурации: {e}")
 
     def _validate_config(self):
-        """Проверяет валидность конфигурации"""
         missing_keys = self.required_keys - set(self.config_data.keys())
         if missing_keys:
             raise ValueError(f"Отсутствуют параметры: {', '.join(missing_keys)}")
