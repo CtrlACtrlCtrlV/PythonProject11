@@ -152,7 +152,7 @@ class PackageAnalyzer:
         version = self.config_data['version']
 
         print(f"Прямые зависимости пакета {package_name} версии {version}:")
-        print("=" * 50)
+
 
         if not dependencies:
             print("Зависимости не найдены")
@@ -160,11 +160,11 @@ class PackageAnalyzer:
             for dep_name, dep_version in sorted(dependencies.items()):
                 print(f"  - {dep_name}: {dep_version}")
 
-        print("=" * 50)
+
 
     def run(self):
         try:
-            print("Запуск анализатора зависимостей Rust-пакетов...")
+            print("анализатор зависимостей ")
 
             self.load_config()
 
@@ -182,7 +182,7 @@ class PackageAnalyzer:
 
             self.display_dependencies(filtered_deps)
 
-            print("Анализ зависимостей завершен успешно!")
+            print("Всё хорошо")
 
         except (FileNotFoundError, ValueError, TypeError, RuntimeError) as e:
             print(f"Ошибка: {str(e)}", file=sys.stderr)
@@ -191,7 +191,7 @@ class PackageAnalyzer:
             print("\nПрограмма прервана пользователем", file=sys.stderr)
             sys.exit(1)
         except Exception as e:
-            print(f"Неизвестная ошибка: {str(e)}", file=sys.stderr)
+            print(f"Что-то пошло не так: {str(e)}", file=sys.stderr)
             sys.exit(1)
 
 
