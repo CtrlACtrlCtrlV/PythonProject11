@@ -1,6 +1,6 @@
-package_name:
-repo_url: "https://github.com/CtrlACtrlCtrlV/PythonProject11"
+package_name: "serde"
+repo_url: "https://github.com/serde-rs/serde"
 mode: "remote"
-version: "1.0.0"
+version: "v1.0.197"
 output_image: "dependency_graph.png"
-filter_substring: "test"
+filter_substring: ""
