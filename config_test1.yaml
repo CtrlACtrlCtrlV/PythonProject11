@@ -1,0 +1,6 @@
+package_name: "A"
+repo_url: "test_graph1.txt"
+mode: "test"
+version: "1.0.0"
+output_image: "test_graph.png"
+filter_substring: ""

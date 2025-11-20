@@ -1,13 +1,8 @@
-package_name: "reqwest"
-repo_url: "https://github.com/seanmonstar/reqwest"
+
+
+package_name: "tokio"
+repo_url: "https://github.com/tokio-rs/tokio"
 mode: "remote"
-version: "v0.11.27"
+version: "tokio-1.0.0"
 output_image: "dependency_graph.png"
 filter_substring: ""
-
-#package_name: "tokio"
-#repo_url: "https://github.com/tokio-rs/tokio"
-#mode: "remote"
-#version: "tokio-1.0.0"
-#output_image: "dependency_graph.png"
-#filter_substring: ""
