@@ -15,7 +15,7 @@ class VFSApp:
         self.create_widgets()
 
     def create_widgets(self):
-        # Основная область вывода
+
         self.output_area = scrolledtext.ScrolledText(
             self.root,
             width=90,
@@ -25,7 +25,7 @@ class VFSApp:
         )
         self.output_area.pack(padx=10, pady=10, fill='both', expand=True)
 
-        # Панель ввода команд
+
         input_frame = ttk.Frame(self.root)
         input_frame.pack(padx=10, pady=5, fill='x')
 
@@ -35,20 +35,20 @@ class VFSApp:
         self.command_entry.pack(side='left', fill='x', expand=True, padx=(5, 0))
         self.command_entry.bind('<Return>', self.execute_command)
 
-        # Кнопка выполнения
+
         ttk.Button(
             input_frame,
             text="Выполнить",
             command=self.execute_command
         ).pack(side='right', padx=(5, 0))
 
-        # Статус бар
+
         self.status_var = tk.StringVar()
         self.status_var.set("Готов")
         status_bar = ttk.Label(self.root, textvariable=self.status_var, relief='sunken')
         status_bar.pack(side='bottom', fill='x')
 
-        # Приветственное сообщение
+
         self.print_output("=" * 80)
         self.print_output("VFS - Виртуальная Файловая Система")
         self.print_output("Версия 2.0 (с поддержкой анализа зависимостей Cargo)")
@@ -81,7 +81,7 @@ class VFSApp:
         cmd = parts[0].lower()
         args = parts[1:]
 
-        # Обработка команд
+
         if cmd == "exit":
             self.root.quit()
         elif cmd == "ls":
@@ -139,13 +139,12 @@ class VFSApp:
     def get_cargo_dependencies(self, crate_name, version):
         """Получение зависимостей из Cargo.toml через crates.io API"""
 
-        # URL API crates.io для получения информации о пакете
         api_url = f"https://crates.io/api/v1/crates/{crate_name}/{version}"
 
         self.print_output(f"Запрос к API: {api_url}")
 
         try:
-            # Отправляем запрос к API crates.io
+
             req = urllib.request.Request(
                 api_url,
                 headers={'User-Agent': 'VFS-App/1.0'}
@@ -157,16 +156,16 @@ class VFSApp:
 
                 data = json.loads(response.read().decode('utf-8'))
 
-                # Извлекаем информацию о зависимостях
+
                 dependencies = []
 
-                # Проверяем наличие информации о версии
+
                 if 'version' not in data:
                     raise Exception("Информация о версии не найдена в ответе API")
 
                 version_data = data['version']
 
-                # Извлекаем зависимости из Cargo.toml данных
+
                 if 'dependencies' in version_data:
                     for dep in version_data['dependencies']:
                         dep_info = {
@@ -202,7 +201,7 @@ class VFSApp:
             self.print_output("  Пакет не имеет зависимостей")
             return
 
-        # Группируем зависимости по типу
+
         normal_deps = [d for d in dependencies if d['kind'] == 'normal']
         dev_deps = [d for d in dependencies if d['kind'] == 'dev']
         build_deps = [d for d in dependencies if d['kind'] == 'build']
