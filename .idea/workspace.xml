@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Должнно работать">
+    <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Порой наотрез отказывается выполгнять команды, а порой всё работает">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package_analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/package_analyzer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -213,7 +213,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763628197242</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Должнно работать">
+      <option name="closed" value="true" />
+      <created>1766046600281</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1766046600281</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Порой наотрез отказывается выполгнять команды, а порой всё работает">
+      <option name="closed" value="true" />
+      <created>1766046673665</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1766046673665</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -234,6 +250,7 @@
     <MESSAGE value="Вроде работает" />
     <MESSAGE value="Теперь точно работает" />
     <MESSAGE value="Должнно работать" />
-    <option name="LAST_COMMIT_MESSAGE" value="Должнно работать" />
+    <MESSAGE value="Порой наотрез отказывается выполгнять команды, а порой всё работает" />
+    <option name="LAST_COMMIT_MESSAGE" value="Порой наотрез отказывается выполгнять команды, а порой всё работает" />
   </component>
 </project>
