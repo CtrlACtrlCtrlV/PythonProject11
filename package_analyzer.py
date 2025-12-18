@@ -1,285 +1,285 @@
-#!/usr/bin/env python3
-
-import yaml
-import sys
-import base64
+import tkinter as tk
+from tkinter import ttk, scrolledtext, messagebox
+import shlex
 import json
-import collections
-from pathlib import Path
-from urllib.request import urlopen, Request
-from urllib.error import URLError, HTTPError
+import urllib.request
 import re
 
 
-class PackageAnalyzer:
-    def __init__(self, config_path="config_test1.yaml"):
-        self.config_path = Path(config_path)
-        self.config_data = {}
+class VFSApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("VFS - Виртуальная Файловая Система")
+        self.current_path = "/"
 
-        self.required_keys = {
-            'package_name',
-            'repo_url',
-            'mode',
-            'version',
-            'output_image',
-            'filter_substring'
-        }
+        self.create_widgets()
 
-    def load_config(self):
+    def create_widgets(self):
+        # Основная область вывода
+        self.output_area = scrolledtext.ScrolledText(
+            self.root,
+            width=90,
+            height=25,
+            state='disabled',
+            font=("Courier New", 10)
+        )
+        self.output_area.pack(padx=10, pady=10, fill='both', expand=True)
+
+        # Панель ввода команд
+        input_frame = ttk.Frame(self.root)
+        input_frame.pack(padx=10, pady=5, fill='x')
+
+        ttk.Label(input_frame, text="VFS>", font=("Arial", 10, "bold")).pack(side='left')
+
+        self.command_entry = ttk.Entry(input_frame, width=80, font=("Arial", 10))
+        self.command_entry.pack(side='left', fill='x', expand=True, padx=(5, 0))
+        self.command_entry.bind('<Return>', self.execute_command)
+
+        # Кнопка выполнения
+        ttk.Button(
+            input_frame,
+            text="Выполнить",
+            command=self.execute_command
+        ).pack(side='right', padx=(5, 0))
+
+        # Статус бар
+        self.status_var = tk.StringVar()
+        self.status_var.set("Готов")
+        status_bar = ttk.Label(self.root, textvariable=self.status_var, relief='sunken')
+        status_bar.pack(side='bottom', fill='x')
+
+        # Приветственное сообщение
+        self.print_output("=" * 80)
+        self.print_output("VFS - Виртуальная Файловая Система")
+        self.print_output("Версия 2.0 (с поддержкой анализа зависимостей Cargo)")
+        self.print_output("=" * 80)
+        self.print_output("\nДоступные команды:")
+        self.print_output("  ls [args]           - список файлов (заглушка)")
+        self.print_output("  cd <path>           - сменить директорию")
+        self.print_output("  deps <crate> <ver>  - показать зависимости пакета Rust")
+        self.print_output("  help                - показать справку")
+        self.print_output("  exit                - выход\n")
+
+    def execute_command(self, event=None):
+        command_string = self.command_entry.get().strip()
+        self.command_entry.delete(0, 'end')
+
+        if not command_string:
+            return
+
+        self.print_output(f"> {command_string}")
+
         try:
-            if not self.config_path.exists():
-                raise FileNotFoundError(f"Конфигурационный файл {self.config_path} не найден")
+            parts = shlex.split(command_string)
+        except ValueError as e:
+            self.print_output(f"Ошибка парсинга: {str(e)}", error=True)
+            return
 
-            with open(self.config_path, 'r', encoding='utf-8') as file:
-                self.config_data = yaml.safe_load(file)
+        if not parts:
+            return
 
-            if self.config_data is None:
-                raise ValueError("Конфигурационный файл пуст")
+        cmd = parts[0].lower()
+        args = parts[1:]
 
-            self._validate_config()
-
-        except yaml.YAMLError as e:
-            raise ValueError(f"Ошибка формата YAML: {e}")
-        except Exception as e:
-            raise RuntimeError(f"Ошибка загрузки конфигурации: {e}")
-
-    def _validate_config(self):
-        missing_keys = self.required_keys - set(self.config_data.keys())
-        if missing_keys:
-            raise ValueError(f"Отсутствуют обязательные параметры: {', '.join(missing_keys)}")
-
-        for key in self.required_keys:
-            if not isinstance(self.config_data[key], str):
-                raise TypeError(f"Параметр '{key}' должен быть строкой")
-
-    def extract_github_info(self, repo_url):
-        patterns = [
-            r'https://github\.com/([^/]+)/([^/]+)',
-            r'git@github\.com:([^/]+)/([^/]+)\.git'
-        ]
-
-        for pattern in patterns:
-            match = re.match(pattern, repo_url)
-            if match:
-                return match.group(1), match.group(2)
-
-        raise ValueError(f"Неподдерживаемый формат URL репозитория: {repo_url}")
-
-    def get_cargo_toml_content(self, owner, repo, version):
-        url = f"https://api.github.com/repos/{owner}/{repo}/contents/Cargo.toml?ref={version}"
-
-        try:
-            request = Request(url)
-            request.add_header('User-Agent', 'PackageAnalyzer/1.0')
-
-            with urlopen(request) as response:
-                data = json.loads(response.read().decode())
-
-                if 'content' not in data:
-                    raise ValueError("Cargo.toml не найден в репозитории")
-
-                content = base64.b64decode(data['content']).decode('utf-8')
-                return content
-
-        except HTTPError as e:
-            if e.code == 404:
-                raise ValueError(f"Cargo.toml не найден для версии {version}")
-            else:
-                raise RuntimeError(f"Ошибка GitHub API: {e.code} {e.reason}")
-        except URLError as e:
-            raise RuntimeError(f"Ошибка сети: {e.reason}")
-
-    def parse_dependencies(self, cargo_toml_content):
-        dependencies = {}
-
-        dependency_pattern = r'^(\w+)\s*=\s*(.+)$'
-        section_pattern = r'^\[dependencies\]'
-        in_dependencies_section = False
-
-        for line in cargo_toml_content.split('\n'):
-            line = line.strip()
-
-            if not line or line.startswith('#'):
-                continue
-
-            if line == '[dependencies]':
-                in_dependencies_section = True
-                continue
-            elif line.startswith('[') and in_dependencies_section:
-                break
-
-            if in_dependencies_section:
-                match = re.match(dependency_pattern, line)
-                if match:
-                    dep_name = match.group(1)
-                    dep_value = match.group(2).strip()
-
-                    if dep_value.startswith('{') and dep_value.endswith('}'):
-                        version_match = re.search(r'version\s*=\s*"([^"]+)"', dep_value)
-                        if version_match:
-                            dependencies[dep_name] = version_match.group(1)
-                        else:
-                            dependencies[dep_name] = dep_value
-                    else:
-                        dependencies[dep_name] = dep_value.strip('"')
-
-        return dependencies
-
-    def build_dependency_graph_bfs(self, start_package, start_version):
-        graph = {}
-        visited = set()
-        queue = collections.deque([(start_package, start_version)])
-
-        print(f"Построение графа зависимостей для {start_package}...")
-
-        while queue:
-            current_package, current_version = queue.popleft()
-
-            if current_package in visited:
-                print(f"Обнаружен цикл: {current_package} уже посещен")
-                continue
-
-            visited.add(current_package)
-
-            if self.config_data['filter_substring'] and \
-                    self.config_data['filter_substring'].lower() in current_package.lower():
-                print(f"Пропуск пакета {current_package} (фильтр: {self.config_data['filter_substring']})")
-                continue
-
-            try:
-                owner, repo = self.extract_github_info(self.config_data['repo_url'])
-                cargo_content = self.get_cargo_toml_content(owner, repo, current_version)
-                dependencies = self.parse_dependencies(cargo_content)
-
-                graph[current_package] = dependencies
-
-                for dep_name, dep_version in dependencies.items():
-                    if dep_name not in visited:
-                        queue.append((dep_name, current_version))
-                        print(f"Добавлена зависимость: {current_package} -> {dep_name}")
-
-            except Exception as e:
-                print(f"Ошибка при обработке пакета {current_package}: {e}")
-                graph[current_package] = {}
-
-        return graph
-
-    def read_test_graph(self, file_path):
-        graph = {}
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                for line in f:
-                    line = line.strip()
-                    if not line or line.startswith('#'):
-                        continue
-
-                    parts = line.split()
-                    if len(parts) >= 1:
-                        package = parts[0]
-                        dependencies = parts[1].split(',') if len(parts) > 1 else []
-                        graph[package] = dependencies
-
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Тестовый файл {file_path} не найден")
-        except Exception as e:
-            raise RuntimeError(f"Ошибка чтения тестового файла: {e}")
-
-        return graph
-
-    def build_test_graph_bfs(self, test_graph, start_package):
-        graph = {}
-        visited = set()
-        queue = collections.deque([start_package])
-
-        print(f"Построение тестового графа из {start_package}...")
-
-        while queue:
-            current_package = queue.popleft()
-
-            if current_package in visited:
-                print(f"Обнаружен цикл: {current_package} уже посещен")
-                continue
-
-            visited.add(current_package)
-
-            if self.config_data['filter_substring'] and \
-                    self.config_data['filter_substring'].lower() in current_package.lower():
-                print(f"Пропуск пакета {current_package} (фильтр: {self.config_data['filter_substring']})")
-                continue
-
-            dependencies = test_graph.get(current_package, [])
-            graph[current_package] = {dep: "test-version" for dep in dependencies}
-
-            for dep in dependencies:
-                if dep not in visited:
-                    queue.append(dep)
-                    print(f"Добавлена зависимость: {current_package} -> {dep}")
-
-        return graph
-
-    def print_graph_info(self, graph):
-        """Выводит информацию о построенном графе"""
-        print("\n" + "=" * 60)
-        print("ИНФОРМАЦИЯ О ГРАФЕ ЗАВИСИМОСТЕЙ")
-        print("=" * 60)
-
-        total_packages = len(graph)
-        total_dependencies = sum(len(deps) for deps in graph.values())
-
-        print(f"Всего пакетов в графе: {total_packages}")
-        print(f"Всего зависимостей: {total_dependencies}")
-        print(f"Фильтр подстроки: '{self.config_data['filter_substring']}'")
-
-        print("\nСтруктура графа:")
-        for package, dependencies in sorted(graph.items()):
-            if dependencies:
-                dep_list = ", ".join(sorted(dependencies.keys()))
-                print(f"  {package} -> {dep_list}")
-            else:
-                print(f"  {package} -> (нет зависимостей)")
-
-        print("\nАнализ графа:")
-        has_dependencies = any(dependencies for dependencies in graph.values())
-        if not has_dependencies:
-            print("  Граф не содержит зависимостей")
-        elif total_packages == 1:
-            print("  Граф содержит только корневой пакет")
+        # Обработка команд
+        if cmd == "exit":
+            self.root.quit()
+        elif cmd == "ls":
+            self.cmd_ls(args)
+        elif cmd == "cd":
+            self.cmd_cd(args)
+        elif cmd == "deps":
+            self.cmd_deps(args)
+        elif cmd == "help":
+            self.cmd_help()
         else:
-            print("  Граф содержит транзитивные зависимости")
+            self.print_output(f"Ошибка: неизвестная команда '{cmd}'", error=True)
 
-    def run(self):
+    def cmd_ls(self, args):
+        """Заглушка для команды ls"""
+        if args:
+            self.print_output(f"Команда 'ls' с аргументами: {args}")
+        else:
+            self.print_output("Команда 'ls': вывод списка файлов")
+            self.print_output("drwxr-xr-x  user user  4096 Dec  1 10:00 .")
+            self.print_output("drwxr-xr-x  user user  4096 Dec  1 10:00 ..")
+            self.print_output("-rw-r--r--  user user   123 Dec  1 10:00 file.txt")
+            self.print_output("drwxr-xr-x  user user  4096 Dec  1 10:00 directory")
+
+    def cmd_cd(self, args):
+        """Заглушка для команды cd"""
+        if len(args) != 1:
+            self.print_output("Ошибка: команда 'cd' требует ровно один аргумент", error=True)
+            return
+        self.print_output(f"Изменение директории на: {args[0]}")
+        self.current_path = args[0]
+        self.print_output(f"Текущий путь: {self.current_path}")
+
+    def cmd_deps(self, args):
+        """Получение зависимостей пакета Rust/Cargo"""
+        if len(args) != 2:
+            self.print_output("Ошибка: команда 'deps' требует два аргумента: <пакет> <версия>", error=True)
+            self.print_output("Пример: deps serde 1.0.0", error=True)
+            return
+
+        crate_name = args[0]
+        crate_version = args[1]
+
+        self.status_var.set(f"Получение зависимостей для {crate_name} {crate_version}...")
+        self.root.update()
+
         try:
-            print("Анлизатор графа ...")
-
-            # Загрузка конфигурации
-            self.load_config()
-
-            mode = self.config_data['mode']
-            package_name = self.config_data['package_name']
-
-            if mode == "test":
-                print(f"Режим: ТЕСТОВЫЙ (файл: {self.config_data['repo_url']})")
-                test_graph = self.read_test_graph(self.config_data['repo_url'])
-                graph = self.build_test_graph_bfs(test_graph, package_name)
-            else:
-                print(f"Режим: РЕАЛЬНЫЙ (репозиторий: {self.config_data['repo_url']})")
-                graph = self.build_dependency_graph_bfs(package_name, self.config_data['version'])
-
-            self.print_graph_info(graph)
-
-            print(f"\nГраф успешно построен! Выходное изображение: {self.config_data['output_image']}")
-
-        except (FileNotFoundError, ValueError, TypeError, RuntimeError) as e:
-            print(f"Ошибка: {str(e)}", file=sys.stderr)
-            sys.exit(1)
-        except KeyboardInterrupt:
-            print("\nПрограмма прервана пользователем", file=sys.stderr)
-            sys.exit(1)
+            dependencies = self.get_cargo_dependencies(crate_name, crate_version)
+            self.display_dependencies(crate_name, crate_version, dependencies)
         except Exception as e:
-            print(f"Неизвестная ошибка: {str(e)}", file=sys.stderr)
-            sys.exit(1)
+            self.print_output(f"Ошибка при получении зависимостей: {str(e)}", error=True)
+        finally:
+            self.status_var.set("Готов")
+
+    def get_cargo_dependencies(self, crate_name, version):
+        """Получение зависимостей из Cargo.toml через crates.io API"""
+
+        # URL API crates.io для получения информации о пакете
+        api_url = f"https://crates.io/api/v1/crates/{crate_name}/{version}"
+
+        self.print_output(f"Запрос к API: {api_url}")
+
+        try:
+            # Отправляем запрос к API crates.io
+            req = urllib.request.Request(
+                api_url,
+                headers={'User-Agent': 'VFS-App/1.0'}
+            )
+
+            with urllib.request.urlopen(req, timeout=10) as response:
+                if response.status != 200:
+                    raise Exception(f"HTTP ошибка: {response.status}")
+
+                data = json.loads(response.read().decode('utf-8'))
+
+                # Извлекаем информацию о зависимостях
+                dependencies = []
+
+                # Проверяем наличие информации о версии
+                if 'version' not in data:
+                    raise Exception("Информация о версии не найдена в ответе API")
+
+                version_data = data['version']
+
+                # Извлекаем зависимости из Cargo.toml данных
+                if 'dependencies' in version_data:
+                    for dep in version_data['dependencies']:
+                        dep_info = {
+                            'name': dep.get('crate_id', 'unknown'),
+                            'version_req': dep.get('req', '*'),
+                            'features': dep.get('features', []),
+                            'optional': dep.get('optional', False),
+                            'kind': dep.get('kind', 'normal')
+                        }
+                        dependencies.append(dep_info)
+
+                return dependencies
+
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                raise Exception(f"Пакет '{crate_name}' версии '{version}' не найден")
+            else:
+                raise Exception(f"Ошибка HTTP: {e.code} - {e.reason}")
+        except urllib.error.URLError as e:
+            raise Exception(f"Ошибка подключения: {str(e)}")
+        except json.JSONDecodeError as e:
+            raise Exception(f"Ошибка разбора JSON: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Неизвестная ошибка: {str(e)}")
+
+    def display_dependencies(self, crate_name, version, dependencies):
+        """Отображение зависимостей в красивом формате"""
+        self.print_output("=" * 80)
+        self.print_output(f"ЗАВИСИМОСТИ ПАКЕТА: {crate_name} {version}")
+        self.print_output("=" * 80)
+
+        if not dependencies:
+            self.print_output("  Пакет не имеет зависимостей")
+            return
+
+        # Группируем зависимости по типу
+        normal_deps = [d for d in dependencies if d['kind'] == 'normal']
+        dev_deps = [d for d in dependencies if d['kind'] == 'dev']
+        build_deps = [d for d in dependencies if d['kind'] == 'build']
+
+        if normal_deps:
+            self.print_output("\nОбычные зависимости:")
+            for dep in normal_deps:
+                optional = " (опционально)" if dep['optional'] else ""
+                features = f" [фичи: {', '.join(dep['features'])}]" if dep['features'] else ""
+                self.print_output(f"  • {dep['name']} {dep['version_req']}{optional}{features}")
+
+        if dev_deps:
+            self.print_output("\nЗависимости для разработки:")
+            for dep in dev_deps:
+                self.print_output(f"  • {dep['name']} {dep['version_req']}")
+
+        if build_deps:
+            self.print_output("\nЗависимости для сборки:")
+            for dep in build_deps:
+                self.print_output(f"  • {dep['name']} {dep['version_req']}")
+
+        self.print_output(f"\nВсего зависимостей: {len(dependencies)}")
+        self.print_output("=" * 80)
+
+    def cmd_help(self):
+        """Вывод справки по командам"""
+        self.print_output("\nСПРАВКА ПО КОМАНДАМ:")
+        self.print_output("=" * 50)
+        self.print_output("ls [аргументы]")
+        self.print_output("  Вывод списка файлов и директорий")
+        self.print_output("")
+        self.print_output("cd <путь>")
+        self.print_output("  Изменение текущей директории")
+        self.print_output("")
+        self.print_output("deps <пакет> <версия>")
+        self.print_output("  Получение зависимостей пакета Rust/Cargo")
+        self.print_output("  Пример: deps serde 1.0.0")
+        self.print_output("")
+        self.print_output("help")
+        self.print_output("  Вывод этой справки")
+        self.print_output("")
+        self.print_output("exit")
+        self.print_output("  Выход из программы")
+        self.print_output("=" * 50)
+
+    def print_output(self, text, error=False):
+        """Вывод текста в область вывода"""
+        self.output_area.configure(state='normal')
+
+        if error:
+            self.output_area.tag_configure('error', foreground='red')
+            self.output_area.insert('end', text + '\n', 'error')
+        else:
+            self.output_area.insert('end', text + '\n')
+
+        self.output_area.see('end')
+        self.output_area.configure(state='disabled')
+
+
+def main():
+    root = tk.Tk()
+    root.geometry("900x600")
+
+    # Центрирование окна
+    root.update_idletasks()
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    window_width = root.winfo_width()
+    window_height = root.winfo_height()
+
+    x = (screen_width - window_width) // 2
+    y = (screen_height - window_height) // 2
+    root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
+    app = VFSApp(root)
+    root.mainloop()
 
 
 if __name__ == "__main__":
-    analyzer = PackageAnalyzer()
-    analyzer.run()
+    main()

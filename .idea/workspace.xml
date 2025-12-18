@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Теперь точно работает">
+    <list default="true" id="665d4bbc-22af-4d8a-a02a-1c09c0f2011c" name="Changes" comment="Должнно работать">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package_analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/package_analyzer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,6 +56,11 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.appearance&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\SecondPearson\PycharmProjects\PythonProject11" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -201,7 +205,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763624192093</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Должнно работать">
+      <option name="closed" value="true" />
+      <created>1763628197242</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1763628197242</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -221,6 +233,7 @@
     <MESSAGE value="Неизвестная ошибка" />
     <MESSAGE value="Вроде работает" />
     <MESSAGE value="Теперь точно работает" />
-    <option name="LAST_COMMIT_MESSAGE" value="Теперь точно работает" />
+    <MESSAGE value="Должнно работать" />
+    <option name="LAST_COMMIT_MESSAGE" value="Должнно работать" />
   </component>
 </project>
